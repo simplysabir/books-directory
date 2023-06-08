@@ -17,8 +17,8 @@ const addBook = async (req,res) => {
 
 const getBook = async (req,res) => {
     try {
-        const {book_id} = req.body;
-        const bookExists = Books.findOne({book_id});
+        const { book_id } = req.body;
+        const bookExists = await Books.findOne({book_id : book_id});
         if(!bookExists) {
             return res.status(502).send({success : false, msg : "Books Doesn't Exists"});
         }
@@ -30,7 +30,7 @@ const getBook = async (req,res) => {
 
 const getAllBook = async (req,res) => {
     try {
-        const answer = Books.find({});
+        const answer = await Books.find({});
 
         return res.status(200).json(answer);
     } catch (error) {
@@ -41,11 +41,12 @@ const getAllBook = async (req,res) => {
 const updateBook = async (req,res) => {
     try {
         const { book_id, book_name, book_rating } = req.body;
-        const bookExists = Books.findOne({book_id});
+        const bookExists = await Books.findOne({book_id : book_id});
         if(!bookExists) {
             return res.status(502).send({success : false, msg : "Books Doesn't Exists"});
         }
-        Books.findOneAndUpdate({book_id, book_name, book_rating});
+        const finalAnswer = await Books.findOneAndUpdate({book_id : book_id, book_name: book_name, book_rating : book_rating});
+        finalAnswer.save();
 
         return res.status(200).send({success : true, msg : "Book Updated"});
 
@@ -57,11 +58,12 @@ const updateBook = async (req,res) => {
 const deleteBook = async (req,res) => {
     try {
         const { book_id } = req.body;
-        const bookExists = Books.findOne({book_id});
+        const bookExists = await Books.findOne({book_id});
         if(!bookExists) {
             return res.status(502).send({success : false, msg : "Books Doesn't Exists"});
         }
-        Books.findOneAndDelete({book_id});
+        const finalAnswer = await Books.findOneAndDelete({book_id});
+        finalAnswer.save();
 
         res.status(200).json({success : true, msg : "Book Deleted"});
         
